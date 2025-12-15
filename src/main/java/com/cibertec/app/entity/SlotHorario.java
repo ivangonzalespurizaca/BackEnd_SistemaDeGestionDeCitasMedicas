@@ -40,7 +40,7 @@ public class SlotHorario {
     private LocalDate fecha;
 
     @Column(name = "Hora_Inicio", nullable = false)
-    private LocalTime horaInicio;
+    private LocalTime hora;
     
     @Enumerated(EnumType.STRING)
     @Column(name = "Estado", nullable = false)
