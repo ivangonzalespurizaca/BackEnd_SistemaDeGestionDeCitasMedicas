@@ -1,6 +1,6 @@
 USE DB_Hospital;
 
-INSERT INTO Especialidad (Nombre)
+INSERT INTO Especialidad (Nombre_Especialidad)
 VALUES 
 ('Medicina General'),
 ('Pediatría'),
@@ -17,7 +17,7 @@ VALUES
 ('medi2', '$2a$10$pehyH/xsPAjfSYDgzqvX5uZMKEHtT/z6Ikslr7x9Ej3UUZnq5gr3G', 'Anthony Renato', 'Rojas Salazar', '98745215', '988552541', 'MEDICO'),
 ('medi3', '$2a$10$pehyH/xsPAjfSYDgzqvX5uZMKEHtT/z6Ikslr7x9Ej3UUZnq5gr3G', 'Sofia Lorena', 'Diaz Pereda', '87412541', '954125412', 'MEDICO');
 
-INSERT INTO Medico (ID_Medico, Nro_Colegiatura, Especialidad_ID)
+INSERT INTO Medico (ID_Usuario, Nro_Colegiatura, Especialidad_ID)
 VALUES 
 (4, 'COL-1001', 1),
 (5, 'COL-1002', 2),
@@ -29,15 +29,15 @@ VALUES
 ('Lucía', 'Ramírez Paredes', '71589423', '1985-09-27', '956478213'),
 ('Carlos', 'Torres Huamán', '73214589', '2000-01-08','945612378');
 
-INSERT INTO Horarios_Atencion (ID_Medico, Dia_Semana, Horario_Entrada, Horario_Salida)
+INSERT INTO Horarios_Atencion (Id_Medico, Dia_Semana, Horario_Entrada, Horario_Salida)
 VALUES
-(4, 'LUNES', '09:00:00', '13:00:00'),
-(4, 'MIERCOLES', '09:00:00', '13:00:00'),
-(4, 'VIERNES', '09:00:00', '13:00:00'),
-(5, 'MARTES', '08:00:00', '12:00:00'),
-(5, 'JUEVES', '08:00:00', '12:00:00'),
-(6, 'LUNES', '14:00:00', '18:00:00'),
-(6, 'MIERCOLES', '14:00:00', '18:00:00');
+(1, 'LUNES', '09:00:00', '13:00:00'),
+(1, 'MIERCOLES', '09:00:00', '13:00:00'),
+(1, 'VIERNES', '09:00:00', '13:00:00'),
+(2, 'MARTES', '08:00:00', '12:00:00'),
+(2, 'JUEVES', '08:00:00', '12:00:00'),
+(3, 'LUNES', '14:00:00', '18:00:00'),
+(3, 'MIERCOLES', '14:00:00', '18:00:00');
 
 CALL GenerarSlots();
 
@@ -45,15 +45,15 @@ CALL GenerarSlots();
 -- CITAS FUTURAS (15 registros)
 INSERT INTO Cita (ID_Medico, ID_Paciente, ID_Usuario, Fecha, Hora, Motivo)
 VALUES
-(4, 1, 2, '2025-12-22', '09:00:00', 'Consulta general'),
-(4, 2, 2, '2025-12-24', '09:00:00', 'Dolor de garganta'),
-(4, 3, 2, '2025-12-24', '11:00:00', 'Fiebre y malestar'),
-(5, 1, 2, '2025-12-9', '08:00:00', 'Revisión pediátrica'),
-(5, 2, 2, '2025-12-11', '08:00:00', 'Chequeo infantil'),
-(5, 3, 2, '2025-12-11', '09:00:00', 'Vacunación'),
-(6, 1, 2, '2025-12-15', '14:00:00', 'Control ginecológico'),
-(6, 2, 2, '2025-12-15', '15:00:00', 'Consulta prenatal'),
-(6, 3, 2, '2025-12-17', '16:00:00', 'Revisión anual');
+(1, 1, 2, '2025-12-22', '09:00:00', 'Consulta general'),
+(1, 2, 2, '2025-12-24', '09:00:00', 'Dolor de garganta'),
+(1, 3, 2, '2025-12-24', '11:00:00', 'Fiebre y malestar'),
+(2, 1, 2, '2025-12-9', '08:00:00', 'Revisión pediátrica'),
+(2, 2, 2, '2025-12-11', '08:00:00', 'Chequeo infantil'),
+(2, 3, 2, '2025-12-11', '09:00:00', 'Vacunación'),
+(3, 1, 2, '2025-12-15', '14:00:00', 'Control ginecológico'),
+(3, 2, 2, '2025-12-15', '15:00:00', 'Consulta prenatal'),
+(3, 3, 2, '2025-12-17', '16:00:00', 'Revisión anual');
 
 -- COMPROBANTES DE PAGO CORRESPONDIENTES
 INSERT INTO Comprobante_Pago (ID_Cita, ID_Usuario, Nombres_Pagador, Apellidos_Pagador, DNI_Pagador, Contacto_Pagador, Monto, Metodo_Pago)
@@ -67,6 +67,12 @@ VALUES
 (7, 3, 'Javier', 'Mendoza Castillo', '74851236', '987321654', 85.00, 'EFECTIVO'),
 (8, 3, 'Lucía', 'Ramírez Paredes', '71589423', '956478213', 100.00, 'TARJETA'),
 (9, 3, 'Carlos', 'Torres Huamán', '73214589', '945612378', 115.00, 'TRANSFERENCIA');
+
+INSERT INTO Usuario (Username, Contrasenia, Nombres, Apellidos, DNI, Telefono, Rol)
+VALUES
+('medi4', '$2a$10$pehyH/xsPAjfSYDgzqvX5uZMKEHtT/z6Ikslr7x9Ej3UUZnq5gr3G', 'Rodrigo Gustavo', 'Rosales Palma', '77874547', '999985421', 'MEDICO'),
+('medi5', '$2a$10$pehyH/xsPAjfSYDgzqvX5uZMKEHtT/z6Ikslr7x9Ej3UUZnq5gr3G', 'Carolina Fernanda', 'Talledo Salas', '73323215', '963252352', 'MEDICO'),
+('medi6', '$2a$10$pehyH/xsPAjfSYDgzqvX5uZMKEHtT/z6Ikslr7x9Ej3UUZnq5gr3G', 'Vanessa Esperanza', 'Cardenas Palomino', '71114524', '952365236', 'MEDICO');
 
 SELECT * FROM Slot_Horario;
 

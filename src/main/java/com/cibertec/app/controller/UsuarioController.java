@@ -73,9 +73,9 @@ public class UsuarioController {
 	
 	@GetMapping("/buscar")
 	public ResponseEntity<List<UsuarioResponseDTO>> buscarDisponiblesParaMedico(
-			@RequestParam(required = false) String dni) {
+			@RequestParam(required = false) String criterio) {
 		
-		List<UsuarioResponseDTO> listado = usuarioService.buscarUsuarioParaMedicosDisponibles(dni);
+		List<UsuarioResponseDTO> listado = usuarioService.buscarUsuarioParaMedicosDisponibles(criterio);
 		
 		if (listado.isEmpty()) {
 			return ResponseEntity.noContent().build();

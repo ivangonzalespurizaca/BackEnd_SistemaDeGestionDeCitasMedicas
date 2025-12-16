@@ -6,10 +6,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
-public class MedicoEditarDTO {
+public class MedicoActualizarDTO {
 	
 	@NotNull 
-    private Long idUsuario; 
+    private Long idMedico; 
     
     @NotBlank(message = "El número de colegiatura es obligatorio.")
     @Size(max = 20, message = "El número de colegiatura es demasiado largo.")

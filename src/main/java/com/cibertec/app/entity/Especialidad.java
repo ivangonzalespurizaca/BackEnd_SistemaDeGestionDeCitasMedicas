@@ -25,7 +25,7 @@ public class Especialidad {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idEspecialidad;
 
-    @Column(name="nombre", nullable = false, unique = true, length = 100)
+    @Column(name = "Nombre_Especialidad", nullable = false, unique = true, length = 100)
     private String nombreEspecialidad;
     
     @OneToMany(mappedBy = "especialidad", fetch = FetchType.LAZY)

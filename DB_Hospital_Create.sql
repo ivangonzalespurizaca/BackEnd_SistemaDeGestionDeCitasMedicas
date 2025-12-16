@@ -10,7 +10,7 @@ USE DB_Hospital;
 -- =====================================================
 CREATE TABLE Especialidad (
     ID BIGINT AUTO_INCREMENT PRIMARY KEY,
-    Nombre VARCHAR(100) NOT NULL UNIQUE
+    Nombre_Especialidad VARCHAR(100) NOT NULL UNIQUE
 );
 
 -- =====================================================
@@ -34,11 +34,12 @@ CREATE TABLE Usuario (
 -- TABLA MÉDICO
 -- =====================================================
 CREATE TABLE Medico (
-    ID_Medico BIGINT PRIMARY KEY,
+    Id_Medico BIGINT AUTO_INCREMENT PRIMARY KEY,
+    Id_Usuario BIGINT NOT NULL UNIQUE,
     Nro_Colegiatura VARCHAR(20) NOT NULL UNIQUE,
     Especialidad_ID BIGINT NOT NULL,
     FOREIGN KEY (Especialidad_ID) REFERENCES Especialidad(ID),
-    FOREIGN KEY (ID_Medico) REFERENCES Usuario(Id_Usuario)
+    FOREIGN KEY (Id_Usuario) REFERENCES Usuario(Id_Usuario)
 );
 
 -- =====================================================

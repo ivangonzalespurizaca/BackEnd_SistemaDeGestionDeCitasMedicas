@@ -8,14 +8,14 @@ import com.cibertec.app.dto.UsuarioResponseDTO;
 
 public interface UsuarioService {
 	
-	public UsuarioResponseDTO registrarUsuario(UsuarioRegistroDTO dto);
+	UsuarioResponseDTO registrarUsuario(UsuarioRegistroDTO dto);
 	
-	public UsuarioResponseDTO actualizarUsuario(UsuarioActualizacionDTO dto);
+	UsuarioResponseDTO actualizarUsuario(UsuarioActualizacionDTO dto);
 	
-	public UsuarioResponseDTO buscarPorUserName(String userName);
+	UsuarioResponseDTO buscarPorUserName(String userName);
 	
-	public UsuarioResponseDTO buscarPorId(Long id);
+	UsuarioResponseDTO buscarPorId(Long id);
 	
-	public List<UsuarioResponseDTO> buscarUsuarioParaMedicosDisponibles(String dni);
+	List<UsuarioResponseDTO> buscarUsuarioParaMedicosDisponibles(String dni);
 	
 }

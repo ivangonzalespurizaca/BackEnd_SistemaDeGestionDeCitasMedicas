@@ -15,9 +15,9 @@ public interface CitaRepository extends JpaRepository<Cita, Long>{
 	
 	List<Cita> findByPaciente_NombresStartingWith(String nombre);
 	
-	List<Cita> findByMedico_IdUsuarioAndFechaAndHora(Long id, LocalDate fecha, LocalTime hora);
+	List<Cita> findByMedico_IdMedicoAndFechaAndHora(Long id, LocalDate fecha, LocalTime hora);
 	
-	List<Cita> findByMedico_IdUsuarioAndFecha(Long id, LocalDate fecha);
+	List<Cita> findByMedico_IdMedicoAndFecha(Long id, LocalDate fecha);
 	
 	List<Cita> findByEstado(EstadoCita estado);
 	

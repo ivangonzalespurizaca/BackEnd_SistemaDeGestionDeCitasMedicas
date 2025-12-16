@@ -1,6 +1,5 @@
 package com.cibertec.app.entity;
 
-import java.io.Serializable;
 import com.cibertec.app.enums.EstadoUsuario;
 import com.cibertec.app.enums.TipoRol;
 import jakarta.persistence.Column;
@@ -10,8 +9,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.persistence.InheritanceType;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -19,13 +17,10 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "Usuario")
-@Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Usuario implements Serializable{
-
-	private static final long serialVersionUID = 1L;
+public class Usuario {
 
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -62,4 +57,7 @@ public class Usuario implements Serializable{
 
     @Enumerated(EnumType.STRING)
     private EstadoUsuario estado = EstadoUsuario.ACTIVO;
+    
+    @OneToOne(mappedBy = "usuario")
+    private Medico medico;
 }

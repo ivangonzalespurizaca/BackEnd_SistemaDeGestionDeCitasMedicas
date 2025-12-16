@@ -16,8 +16,11 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 	boolean existsByUsername(String username);
 	
 	@Query("SELECT u FROM Usuario u WHERE "
-	         + "u.rol = com.cibertec.app.enums.TipoRol.MEDICO AND " 
-	         + "TYPE(u) = Usuario AND "
-	         + "(:dniFiltro IS NULL OR u.dni LIKE CONCAT(:dniFiltro, '%'))")
-	    List<Usuario> buscarUsuariosDisponiblesParaMedico(@Param("dniFiltro") String dniFiltro);
+		       + "u.rol = com.cibertec.app.enums.TipoRol.MEDICO AND " 
+		       + "u.idUsuario NOT IN (SELECT m.usuario.idUsuario FROM Medico m) AND " 
+		       + "(:criterio IS NULL OR TRIM(:criterio) = '' OR "
+		       + "LOWER(u.dni) LIKE LOWER(CONCAT(:criterio, '%')) OR "
+		       + "LOWER(u.nombres) LIKE LOWER(CONCAT('%', :criterio, '%')) OR " 
+		       + "LOWER(u.apellidos) LIKE LOWER(CONCAT('%', :criterio, '%')))")
+		List<Usuario> buscarUsuariosDisponiblesParaMedico(@Param("criterio") String dniFiltro);
 }

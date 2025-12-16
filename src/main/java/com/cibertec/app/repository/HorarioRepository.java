@@ -9,8 +9,8 @@ import com.cibertec.app.enums.DiaSemana;
 
 public interface HorarioRepository extends JpaRepository<HorarioDeAtencion, Long>{
 
-	List<HorarioDeAtencion> findByMedico_IdUsuario(Long idMedico);
+	List<HorarioDeAtencion> findByMedico_IdMedico(Long idMedico);
 
-	List<HorarioDeAtencion> findByMedico_IdUsuarioAndDiaSemana(Long idMedico, DiaSemana diaSemana);
+	List<HorarioDeAtencion> findByMedico_IdMedicoAndDiaSemana(Long idMedico, DiaSemana diaSemana);
 	
 }

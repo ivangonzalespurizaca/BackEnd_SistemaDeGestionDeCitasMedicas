@@ -8,17 +8,17 @@ import com.cibertec.app.dto.PacienteResponseDTO;
 
 public interface PacienteService {
 
-	public PacienteResponseDTO registrarPaciente(PacienteRegistroDTO dto);
+	PacienteResponseDTO registrarPaciente(PacienteRegistroDTO dto);
 	
-	public List<PacienteResponseDTO> listarTodo();
+	List<PacienteResponseDTO> listarTodo();
 	
-	public PacienteResponseDTO actualizarPaciente(PacienteActualizacionDTO dto);
+	PacienteResponseDTO actualizarPaciente(PacienteActualizacionDTO dto);
 	
-	public void eliminarPorId(Long id);
+	void eliminarPorId(Long id);
 	
-	public PacienteResponseDTO buscarPorId(Long id);
+	PacienteResponseDTO buscarPorId(Long id);
 	
-	public List<PacienteResponseDTO> buscarPorNombreDNI(String criterio);
+	List<PacienteResponseDTO> buscarPorNombreDNI(String criterio);
 	
 	boolean existePaciente(String dni);
 	
