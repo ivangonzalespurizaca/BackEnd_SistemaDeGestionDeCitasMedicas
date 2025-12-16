@@ -14,26 +14,17 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Service
 public class CustomUserDetailsService implements UserDetailsService{
+	
 	private final UsuarioRepository usuarioRepository;
 	
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("Intentando login con username: " + username);
 
         Usuario usuario = usuarioRepository.findByUsername(username);
-        System.out.println("Usuario encontrado en DB: " + usuario);
 
         if (usuario == null) throw new UsernameNotFoundException("Usuario no encontrado");
 
-        String role;
-        switch (usuario.getRol()) {
-            case ADMINISTRADOR -> role = "ADMINISTRADOR"; 
-            case RECEPCIONISTA -> role = "RECEPCIONISTA"; 
-            case CAJERO -> role = "CAJERO";
-            case MEDICO -> role = "MEDICO";
-            default -> throw new IllegalArgumentException("Rol desconocido");
-        }
-        System.out.println("Rol asignado: " + role);
+        String role = usuario.getRol().name();
 
         UserDetails userDetails = User.builder()
                 .username(usuario.getUsername())
@@ -41,7 +32,6 @@ public class CustomUserDetailsService implements UserDetailsService{
                 .roles(role)
                 .build();
 
-        System.out.println("UserDetails construido: " + userDetails);
         return userDetails;
     }
 }

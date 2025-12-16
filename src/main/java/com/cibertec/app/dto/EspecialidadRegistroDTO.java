@@ -9,6 +9,6 @@ public class EspecialidadRegistroDTO {
 	
 	@NotBlank(message = "El nombre de la especialidad es obligatorio.")
     @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñ]+(\\s?[A-Za-zÁÉÍÓÚáéíóúÑñ]+)*$", message = "El nombre solo puede contener letras y espacios.")
-    private String nombre;
+    private String nombreEspecialidad;
 	
 }

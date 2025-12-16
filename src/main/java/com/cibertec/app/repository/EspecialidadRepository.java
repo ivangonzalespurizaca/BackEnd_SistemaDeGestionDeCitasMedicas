@@ -8,8 +8,8 @@ import com.cibertec.app.entity.Especialidad;
 
 public interface EspecialidadRepository  extends JpaRepository<Especialidad, Long>{
 	
-	List<Especialidad> findByNombreStartingWithIgnoreCase(String nombre);
+	List<Especialidad> findByNombreEspecialidadStartingWithIgnoreCase(String nombre);
 	
-	boolean existsByNombre(String nombre);
+	boolean existsByNombreEspecialidad(String nombre);
 	
 }

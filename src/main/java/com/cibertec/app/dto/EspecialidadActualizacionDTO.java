@@ -9,10 +9,10 @@ import lombok.Data;
 public class EspecialidadActualizacionDTO {
 	
 	@NotNull(message = "El ID de la especialidad es obligatorio para la edición.")
-    private Long id;
+    private Long idEspecialidad;
     
     @NotBlank(message = "El nombre de la especialidad es obligatorio.")
     @Pattern(regexp = "^[A-Za-zÁÉÍÓÚáéíóúÑñ\\s]+$", message = "El nombre solo puede contener letras y espacios.")
-    private String nombre;
+    private String nombreEspecialidad;
     
 }
