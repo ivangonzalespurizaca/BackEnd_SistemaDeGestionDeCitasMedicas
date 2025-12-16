@@ -1,5 +1,85 @@
 package com.cibertec.app.service.impl;
 
-public class UsuarioServiceImpl {
+import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.cibertec.app.dto.UsuarioActualizacionDTO;
+import com.cibertec.app.dto.UsuarioRegistroDTO;
+import com.cibertec.app.dto.UsuarioResponseDTO;
+import com.cibertec.app.entity.Usuario;
+import com.cibertec.app.mapper.UsuarioMapper;
+import com.cibertec.app.repository.UsuarioRepository;
+import com.cibertec.app.service.UsuarioService;
+
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor
+@Service
+public class UsuarioServiceImpl implements UsuarioService{
+	
+	private final UsuarioRepository usuarioRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final UsuarioMapper usuarioMapper;
+	
+	@Override
+	public UsuarioResponseDTO registrarUsuario(UsuarioRegistroDTO dto) {
+		
+		if (usuarioRepository.existsByUsername(dto.getUsername())) {
+            throw new IllegalArgumentException("El nombre de usuario ya está registrado.");
+        }
+		Usuario entity = usuarioMapper.toEntityUsuario(dto);
+		String hash = passwordEncoder.encode(dto.getContrasenia());
+		entity.setContrasenia(hash);
+		
+		Usuario guardado = usuarioRepository.save(entity);
+		
+		return usuarioMapper.toUsuarioResponseDTO(guardado);
+		
+	}
+	
+	@Override
+	public UsuarioResponseDTO actualizarUsuario(UsuarioActualizacionDTO dto) {
+		
+		Usuario entity = usuarioRepository.findById(dto.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+		usuarioMapper.toUsuarioUpdate(dto, entity);
+		
+		String nuevaContrasenia = dto.getContrasenia();
+		
+        if (nuevaContrasenia != null && !nuevaContrasenia.isEmpty()) {
+            entity.setContrasenia(passwordEncoder.encode(nuevaContrasenia));
+        }
+        
+        Usuario actualizado = usuarioRepository.save(entity);
+        
+		return usuarioMapper.toUsuarioResponseDTO(actualizado);
+		
+	}
+	
+	@Override
+	public UsuarioResponseDTO buscarPorUserName(String userName) {
+		Usuario entity = usuarioRepository.findByUsername(userName) 
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        
+        return usuarioMapper.toUsuarioResponseDTO(entity);
+	}
+	
+	@Override
+	public UsuarioResponseDTO buscarPorId(Long id) {
+		Usuario entity = usuarioRepository.findById(id)
+				.orElseThrow(()-> new RuntimeException("Usuario no encontrado"));
+		return usuarioMapper.toUsuarioResponseDTO(entity);
+	}
+
+	@Override
+	public List<UsuarioResponseDTO> buscarUsuarioParaMedicosDisponibles(String dni) {
+		String dniBusqueda = (dni != null && !dni.trim().isEmpty()) ? dni.trim() : null;
+	    
+	    List<Usuario> usuariosEncontrados = usuarioRepository.buscarUsuariosDisponiblesParaMedico(dniBusqueda);
+	    
+	    return usuariosEncontrados.stream()
+	            .map(usuarioMapper::toUsuarioResponseDTO).toList();
+	}
 }

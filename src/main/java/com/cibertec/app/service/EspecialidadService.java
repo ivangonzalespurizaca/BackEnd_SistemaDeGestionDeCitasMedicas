@@ -14,7 +14,7 @@ public interface EspecialidadService {
 	
 	boolean existeEspecialidad(String nombre);
 	
-	public void eliminarEspecialidadPorId(Long id);
+	public void eliminarPorId(Long id);
 	
 	EspecialidadResponseDTO registrarEspecialidad(EspecialidadRegistroDTO dto);
 	

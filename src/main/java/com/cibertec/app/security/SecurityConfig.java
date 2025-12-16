@@ -23,8 +23,8 @@ public class SecurityConfig {
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/test/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMINISTRADOR")
-                .requestMatchers("/api/recepcion/**").hasRole("RECEPCIONISTA")
+                .requestMatchers("/api/administrador/**").hasRole("ADMINISTRADOR")
+                .requestMatchers("/api/recepcionista/**").hasRole("RECEPCIONISTA")
                 .requestMatchers("/api/cajero/**").hasRole("CAJERO")
                 .requestMatchers("/api/medico/**").hasRole("MEDICO")
                 .anyRequest().authenticated()

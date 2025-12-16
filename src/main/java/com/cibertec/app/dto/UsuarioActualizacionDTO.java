@@ -1,7 +1,5 @@
 package com.cibertec.app.dto;
 
-import com.cibertec.app.enums.TipoRol;
-
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -13,7 +11,7 @@ import lombok.Data;
 public class UsuarioActualizacionDTO {
 	
     @NotNull(message = "El ID es obligatorio para la actualización.")
-    private Long id; 
+    private Long idUsuario; 
     
     @Size(min = 6, message = "La contraseña debe tener al menos 6 caracteres si se ingresa.")
     private String contrasenia; 
@@ -36,7 +34,5 @@ public class UsuarioActualizacionDTO {
 
     @Email(message = "Formato de correo inválido.")
     private String correo;
-    
-    private TipoRol rol;
 
 }

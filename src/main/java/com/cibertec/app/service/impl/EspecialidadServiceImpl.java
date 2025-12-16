@@ -31,10 +31,18 @@ public class EspecialidadServiceImpl implements EspecialidadService{
 
 	@Override
 	public List<EspecialidadResponseDTO> buscarPorNombre(String nombre) {
-        return especialidadRepository.findByNombreEspecialidadStartingWithIgnoreCase(nombre)
-                .stream()
-                .map(especialidadMapper::toEspecialidadResponseDTO)
-                .toList();
+		
+		List<Especialidad> especialidadesEncontradas;
+	    
+	    if (nombre != null && !nombre.trim().isEmpty()) {
+	        especialidadesEncontradas = especialidadRepository.findByNombreEspecialidadStartingWithIgnoreCase(nombre);
+	    } 
+	    else {
+	        especialidadesEncontradas = especialidadRepository.findAll();
+	    }
+	    return especialidadesEncontradas.stream()
+	            .map(especialidadMapper::toEspecialidadResponseDTO)
+	            .toList();
 	}
 
 	@Override
@@ -43,7 +51,7 @@ public class EspecialidadServiceImpl implements EspecialidadService{
 	}
 
 	@Override
-	public void eliminarEspecialidadPorId(Long id) {
+	public void eliminarPorId(Long id) {
 
         if (!especialidadRepository.existsById(id)) {
             throw new RuntimeException("Especialidad no encontrada");
@@ -70,7 +78,7 @@ public class EspecialidadServiceImpl implements EspecialidadService{
         Especialidad entity = especialidadRepository.findById(dto.getIdEspecialidad())
                 .orElseThrow(() -> new RuntimeException("Especialidad no encontrada"));
 
-        especialidadMapper.toEntityEspecialidadUpdate(dto, entity);
+        especialidadMapper.toEspecialidadUpdate(dto, entity);
 
         Especialidad actualizada = especialidadRepository.save(entity);
 

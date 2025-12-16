@@ -18,5 +18,5 @@ public interface EspecialidadMapper {
 	EspecialidadResponseDTO toEspecialidadResponseDTO(Especialidad entity);
 	
 	@Mapping(target = "medicos", ignore = true)
-	void toEntityEspecialidadUpdate(EspecialidadActualizacionDTO dto, @MappingTarget Especialidad entity);
+	void toEspecialidadUpdate(EspecialidadActualizacionDTO dto, @MappingTarget Especialidad entity);
 }
