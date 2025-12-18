@@ -5,6 +5,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cibertec.app.dto.AgendaMedicoDTO;
 import com.cibertec.app.dto.SlotHorarioResponseDTO;
@@ -22,6 +23,7 @@ public class SlotHorarioServiceImpl implements SlotHorarioService{
 	private final SlotHorarioRepository slotHorarioRepository;
 	private final SlotHorarioMapper slotHorarioMapper;
 	
+	@Transactional(readOnly = true)
 	@Override
 	public List<SlotHorarioResponseDTO> listarDisponibilidadPorMedicoYFecha(Long idMedico, LocalDate fecha) {
 		
@@ -44,6 +46,7 @@ public class SlotHorarioServiceImpl implements SlotHorarioService{
                 .toList();
 	}
 	
+	@Transactional(readOnly = true)
 	@Override
 	public List<AgendaMedicoDTO> obtenerAgendaMedicoPorFecha(Long idMedico, LocalDate fecha) {
 		

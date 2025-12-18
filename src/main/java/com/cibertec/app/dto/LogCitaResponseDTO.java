@@ -7,7 +7,7 @@ import com.cibertec.app.enums.Accion;
 import lombok.Value;
 
 @Value
-public class LogCitaListadoDTO {
+public class LogCitaResponseDTO {
     private Long idLog;
     private LocalDateTime fechaAccion;
     private Accion accion; 

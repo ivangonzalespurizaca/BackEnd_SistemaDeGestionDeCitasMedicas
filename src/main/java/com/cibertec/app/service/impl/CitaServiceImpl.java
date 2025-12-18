@@ -96,7 +96,7 @@ public class CitaServiceImpl implements CitaService{
 	    Cita cita = citaRepository.findById(dto.getIdCita())
 	            .orElseThrow(() -> new EntityNotFoundException("Cita no encontrada."));
 
-	    if (cita.getEstado() != EstadoCita.PENDIENTE && cita.getEstado() != EstadoCita.PAGADO) {
+	    if (cita.getEstado() != EstadoCita.PENDIENTE && cita.getEstado() != EstadoCita.CONFIRMADO) {
 	        throw new IllegalStateException("No se puede modificar una cita en estado: " + cita.getEstado());
 	    }
 	    
@@ -169,7 +169,7 @@ public class CitaServiceImpl implements CitaService{
                 .orElseThrow(() -> new EntityNotFoundException("Cita no encontrada."));
         Usuario actor = usuarioRepository.findByUsername(username).orElseThrow();
 
-        if (cita.getEstado() != EstadoCita.PENDIENTE && cita.getEstado() != EstadoCita.PAGADO) {
+        if (cita.getEstado() != EstadoCita.PENDIENTE && cita.getEstado() != EstadoCita.CONFIRMADO) {
             throw new IllegalStateException("No se puede anular la cita porque ya se encuentra en estado: " + cita.getEstado());
         }
         
@@ -180,7 +180,7 @@ public class CitaServiceImpl implements CitaService{
             slot.setCita(null);
         });
 
-        logService.registrarLog(cita, Accion.CANCELACION, "Cita anulada y horario liberado.", actor);
+        logService.registrarLog(cita, Accion.ANULACION, "Cita anulada y horario liberado.", actor);
 		
 	}
 	
@@ -190,7 +190,7 @@ public class CitaServiceImpl implements CitaService{
 		Cita cita = citaRepository.findById(id).orElseThrow();
         Usuario actor = usuarioRepository.findByUsername(username).orElseThrow();
 
-        if (cita.getEstado() != EstadoCita.PAGADO) {
+        if (cita.getEstado() != EstadoCita.CONFIRMADO) {
             throw new IllegalStateException("No se puede marcar como atendida una cita que está en estado: " + cita.getEstado() 
                 + ". El paciente debe realizar el pago primero.");
         }
@@ -205,12 +205,12 @@ public class CitaServiceImpl implements CitaService{
 		Cita cita = citaRepository.findById(id).orElseThrow();
         Usuario actor = usuarioRepository.findByUsername(username).orElseThrow();
 
-        if (cita.getEstado() != EstadoCita.PAGADO) {
+        if (cita.getEstado() != EstadoCita.CONFIRMADO) {
             throw new IllegalStateException("No se puede marcar como atendida una cita que está en estado: " + cita.getEstado() 
                 + ". El paciente debe realizar el pago primero.");
         }
         
-        cita.setEstado(EstadoCita.NO_ASISTIO);
+        cita.setEstado(EstadoCita.NO_ATENDIDO);
         logService.registrarLog(cita, Accion.NO_ATENDIDO, "Paciente no asistió.", actor);	
 	}
 }

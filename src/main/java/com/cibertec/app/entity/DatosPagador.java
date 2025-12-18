@@ -11,15 +11,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DatosPagador {
-	@Column(name = "Nombre_Pagador", nullable = false, length = 100)
-    private String nombres;
+	@Column(name = "Nombres_Pagador", nullable = false, length = 100)
+    private String nombresPagador;
 
     @Column(name = "Apellidos_Pagador", nullable = false, length = 100)
-    private String apellidos;
+    private String apellidosPagador;
 
     @Column(name = "DNI_Pagador", length = 8)
-    private String dni;
+    private String dniPagador;
 
     @Column(name = "Contacto_Pagador", length = 15)
-    private String contacto;
+    private String contactoPagador;
 }

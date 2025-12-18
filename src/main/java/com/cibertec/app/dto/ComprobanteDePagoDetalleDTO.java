@@ -13,10 +13,10 @@ public class ComprobanteDePagoDetalleDTO {
     private Long idComprobante;
     private LocalDateTime fechaEmision;
     private BigDecimal monto;
-    private String metodoPagoNombre; 
-    private String estadoNombre; 
+    private String metodoPago; 
+    private String estado; 
     
-    private String nombrePagador;
+    private String nombresPagador;
     private String apellidosPagador;
     private String dniPagador;
     private String contactoPagador; 

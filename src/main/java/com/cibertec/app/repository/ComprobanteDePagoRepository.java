@@ -3,12 +3,20 @@ package com.cibertec.app.repository;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import com.cibertec.app.entity.ComprobanteDePago;
 
 public interface ComprobanteDePagoRepository extends JpaRepository<ComprobanteDePago, Long>{
 	
-	List<ComprobanteDePago> findByPagador_Dni(String dni);
+	@Query("SELECT c FROM ComprobanteDePago c " +
+	           "JOIN FETCH c.cita ci " +
+	           "JOIN FETCH ci.paciente p " +
+	           "WHERE (:criterio IS NULL OR :criterio = '' " +
+	           "OR c.pagador.dniPagador LIKE CONCAT('%', :criterio, '%')" +
+	           "OR LOWER(c.pagador.nombresPagador) LIKE LOWER(CONCAT('%', :criterio, '%')) " +
+	           "OR LOWER(c.pagador.apellidosPagador) LIKE LOWER(CONCAT('%', :criterio, '%')))")
+	    List<ComprobanteDePago> buscarPorCriterio(@Param("criterio") String criterio);
 	
-	List<ComprobanteDePago> findByPagador_Nombres(String nombres);
 }

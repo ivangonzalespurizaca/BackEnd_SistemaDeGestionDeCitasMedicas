@@ -52,142 +52,48 @@ END$$
 DELIMITER ;
 
 -- =========================================================
--- TRIGGER PARA CAMBIAR ESTADO DE CITA AL CREAR COMPROBANTE
--- =========================================================
-DELIMITER $$
-
-CREATE TRIGGER trg_After_Insert_Comprobante
-AFTER INSERT ON Comprobante_Pago
-FOR EACH ROW
-BEGIN
-	UPDATE Cita 
-    SET Estado = 'PAGADO'
-    WHERE ID_Cita = NEW.ID_Cita;
-
-    INSERT INTO Log_Cita (ID_Cita, ID_Usuario, Accion, Detalle)
-    VALUES (NEW.ID_Cita, NEW.ID_Usuario, 'PAGO', CONCAT('Comprobante emitido. Monto: ', NEW.Monto));
-END$$
-
-DELIMITER ;
-
--- =========================================================
--- TRIGGER PARA CAMBIAR ESTADO DE CITA AL ANULAR COMPROBANTE
--- =========================================================
-DELIMITER $$
-
-CREATE TRIGGER trg_After_Update_Comprobante
-AFTER UPDATE ON Comprobante_Pago
-FOR EACH ROW
-BEGIN
-    -- Verifica si el estado cambió de EMITIDO a ANULADO
-    IF OLD.Estado = 'EMITIDO' AND NEW.Estado = 'ANULADO' THEN
-        UPDATE Cita
-        SET Estado = 'PENDIENTE'
-        WHERE ID_Cita = NEW.ID_Cita;
-        
-        INSERT INTO Log_Cita (ID_Cita, ID_Usuario, Accion, Detalle)
-        VALUES (NEW.ID_Cita, NEW.ID_Usuario, 'ANULACION', 'Comprobante anulado, Cita regresó a estado PENDIENTE.');
-    END IF;
-END $$
-
-DELIMITER ;
-
--- =========================================================
--- TRIGGER PARA REGISTRAR HISTORIAL CLÍNICO -> CITA ATENDIDA
--- =========================================================
-DELIMITER $$
-
-CREATE TRIGGER trg_After_Insert_Historial
-AFTER INSERT ON Historial_Medico
-FOR EACH ROW
-BEGIN
-    DECLARE v_MedicoID INT;
-    
-    SELECT ID_Medico INTO v_MedicoID
-    FROM Cita
-    WHERE ID_Cita = NEW.ID_Cita;
-
-    UPDATE Cita
-    SET Estado = 'ATENDIDO'
-    WHERE ID_Cita = NEW.ID_Cita;
-    
-    INSERT INTO Log_Cita (ID_Cita, ID_Usuario, Accion, Detalle)
-    VALUES (NEW.ID_Cita, v_MedicoID, 'ATENDIDO', 'Registro clínico completado por el médico.');
-END $$
-
-DELIMITER ;
-
--- =========================================================
--- TRIGGER: AL CREAR UNA CITA -> MARCAR SLOT COMO RESERVADO Y REGISTRAR CREACIÓN
--- =========================================================
-DELIMITER $$
-CREATE TRIGGER trg_After_Insert_Cita
-AFTER INSERT ON Cita
-FOR EACH ROW
-BEGIN
-    UPDATE Slot_Horario
-    SET Estado = 'RESERVADO',
-        ID_Cita = NEW.ID_Cita
-    WHERE ID_Medico = NEW.ID_Medico
-      AND Fecha = NEW.Fecha
-      AND Hora_Inicio = NEW.Hora;
-
-    INSERT INTO Log_Cita (ID_Cita, ID_Usuario, Accion, Detalle)
-    VALUES (NEW.ID_Cita, NEW.Id_Usuario, 'CREACION', 'Cita reservada.');
-END $$
-
-DELIMITER ;
-
--- =========================================================
--- TRIGGER: AL ACTUALIZAR EL ESTADO DE CITA -> LIBERAR SLOT Y REGISTRAR LOG
--- =========================================================
-
-DELIMITER $$
-CREATE TRIGGER trg_After_Update_Cita_Status
-AFTER UPDATE ON Cita
-FOR EACH ROW
-BEGIN
-    -- 1. Si el estado cambia a CANCELADO o VENCIDO, libera el slot en Slot_Horario
-    IF OLD.Estado <> NEW.Estado AND NEW.Estado IN ('CANCELADO', 'VENCIDO') THEN
-        UPDATE Slot_Horario
-        SET Estado = 'DISPONIBLE',
-            ID_Cita = NULL
-        WHERE ID_Cita = NEW.ID_Cita;
-    END IF;
-    
-    -- 2. Registrar la acción CANCELACION o VENCIDO en Log_Cita
-    -- Nota: El trigger se dispara antes de que se ejecuten los INSERTs de VENCIDO del evento.
-    
-    IF OLD.Estado <> NEW.Estado AND NEW.Estado = 'CANCELADO' THEN
-         -- Esto cubre cancelaciones manuales (ej. por la Recepcionista)
-         INSERT INTO Log_Cita (ID_Cita, ID_Usuario, Accion, Detalle)
-         VALUES (NEW.ID_Cita, NEW.Id_Usuario, 'CANCELACION', 'Cita cancelada manualmente/administrativamente.');
-    
-    ELSEIF OLD.Estado <> NEW.Estado AND NEW.Estado = 'VENCIDO' THEN
-         -- Esto cubre cuando la cita pasa de PENDIENTE/PAGADO a VENCIDO.
-         -- Usamos NULL para ID_Usuario porque el cambio fue disparado por el sistema/tiempo.
-         INSERT INTO Log_Cita (ID_Cita, ID_Usuario, Accion, Detalle)
-         VALUES (NEW.ID_Cita, NULL, 'VENCIDO', 'Cita marcada como vencida por el sistema.');
-    END IF;
-END $$
-DELIMITER ;
-
--- =========================================================
 -- EVENTO PARA CAMBIAR DE ESTADO DE CITA
 -- =========================================================
 
 DELIMITER $$
 
 CREATE EVENT IF NOT EXISTS actualizar_estados_citas
-ON SCHEDULE EVERY 1 HOUR
+ON SCHEDULE EVERY 1 MINUTE
 STARTS CURRENT_TIMESTAMP
 DO
 BEGIN
-    -- 1. Marcar citas pendientes como vencidas cuando pasa la hora
+    -- 1. LIBERAR SLOTS (Hacerlo antes de cambiar los estados de la Cita)
+    UPDATE Slot_Horario s
+    INNER JOIN Cita c ON s.ID_Cita = c.ID_Cita
+    SET s.Estado = 'DISPONIBLE', 
+        s.ID_Cita = NULL
+    WHERE (c.Estado = 'PENDIENTE' AND (c.Fecha < CURDATE() OR (c.Fecha = CURDATE() AND c.Hora < CURTIME())))
+       OR (c.Estado = 'CONFIRMADO' AND (c.Fecha < CURDATE() OR (c.Fecha = CURDATE() AND c.Hora < SUBTIME(CURTIME(), '02:00:00'))));
+
+    -- 2. LOGS Y UPDATE PARA 'VENCIDO'
+    INSERT INTO Log_Cita (ID_Cita, Accion, Detalle, Fecha_Accion, ID_Usuario)
+    SELECT ID_Cita, 'VENCIDO', 'Vencimiento automático: No pagó a tiempo', NOW(), NULL
+    FROM Cita
+    WHERE Estado = 'PENDIENTE'
+      AND (Fecha < CURDATE() OR (Fecha = CURDATE() AND Hora < CURTIME()));
+      
     UPDATE Cita
     SET Estado = 'VENCIDO'
     WHERE Estado = 'PENDIENTE'
       AND (Fecha < CURDATE() OR (Fecha = CURDATE() AND Hora < CURTIME()));
+      
+    -- 3. LOGS Y UPDATE PARA 'NO_ASISTIO'
+    INSERT INTO Log_Cita (ID_Cita, Accion, Detalle, Fecha_Accion, ID_Usuario)
+    SELECT ID_Cita, 'NO_ASISTIO', 'Inasistencia automática: Paciente pagó pero no registró atención (Tolerancia 2h)', NOW(), NULL
+    FROM Cita
+    WHERE Estado = 'CONFIRMADO'
+      AND (Fecha < CURDATE() OR (Fecha = CURDATE() AND Hora < SUBTIME(CURTIME(), '02:00:00')));
+
+    UPDATE Cita 
+    SET Estado = 'NO_ASISTIO' 
+    WHERE Estado = 'CONFIRMADO' 
+    AND (Fecha < CURDATE() OR (Fecha = CURDATE() AND Hora < SUBTIME(CURTIME(), '02:00:00')));
+
 END $$
 
 DELIMITER ;

@@ -9,7 +9,9 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
+@Data
 public class ComprobanteDePagoRegistroDTO {
 	
     @NotNull(message = "Debe seleccionar una cita pendiente de pago.")
@@ -24,7 +26,7 @@ public class ComprobanteDePagoRegistroDTO {
 
     @NotBlank(message = "El nombre del pagador es obligatorio.")
     @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres.")
-    private String nombrePagador;
+    private String nombresPagador;
     
     @NotBlank(message = "Los apellidos del pagador son obligatorios.")
     @Size(min = 2, max = 50, message = "Los apellidos deben tener entre 2 y 50 caracteres.")

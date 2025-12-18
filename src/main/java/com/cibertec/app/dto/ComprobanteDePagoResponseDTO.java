@@ -8,14 +8,14 @@ import com.cibertec.app.enums.EstadoComprobante;
 import lombok.Value;
 
 @Value
-public class ComprobanteDePagoListadoDTO {
+public class ComprobanteDePagoResponseDTO {
 	
     private Long idComprobante;
     private LocalDateTime fechaEmision;
     private BigDecimal monto;
     private EstadoComprobante estado; 
     
-    private String nombrePagador;
+    private String nombresPagador;
     private String apellidosPagador;
     private String dniPagador;
     

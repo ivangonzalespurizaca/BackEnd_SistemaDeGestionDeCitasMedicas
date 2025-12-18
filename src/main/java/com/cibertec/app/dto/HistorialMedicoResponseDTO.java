@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import lombok.Value;
 
 @Value
-public class HistorialMedicoListadoDTO {
+public class HistorialMedicoResponseDTO {
     private Long idHistorial;
     private Long idCita; 
 
