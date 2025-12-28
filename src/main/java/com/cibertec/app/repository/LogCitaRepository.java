@@ -11,4 +11,6 @@ public interface LogCitaRepository extends JpaRepository<LogCita, Long>{
 
 	List<LogCita> findByFechaAccionBetweenOrderByFechaAccionDesc(LocalDateTime inicio, LocalDateTime fin);
 	
+	List<LogCita> findTop5ByOrderByFechaAccionDesc();
+	
 }

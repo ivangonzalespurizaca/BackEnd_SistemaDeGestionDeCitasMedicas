@@ -1,11 +1,15 @@
 package com.cibertec.app.controller;
 
+import java.io.ByteArrayInputStream;
 import java.security.Principal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -15,11 +19,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
 import com.cibertec.app.dto.ComprobanteDePagoDetalleDTO;
 import com.cibertec.app.dto.ComprobanteDePagoRegistroDTO;
 import com.cibertec.app.dto.ComprobanteDePagoResponseDTO;
 import com.cibertec.app.enums.MetodoPago;
+import com.cibertec.app.service.CdpPdfService;
 import com.cibertec.app.service.ComprobanteDePagoService;
 
 import jakarta.validation.Valid;
@@ -30,6 +34,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ComprobanteDePagoController {
 	private final ComprobanteDePagoService pagoService;
+	private final CdpPdfService cdpPDFService;
 
     @PostMapping
     public ResponseEntity<ComprobanteDePagoResponseDTO> registrar(
@@ -70,6 +75,25 @@ public class ComprobanteDePagoController {
                 )).toList();
                 
         return ResponseEntity.ok(metodos);
+    }
+    
+    @GetMapping("/reporte/pdf")
+    public ResponseEntity<InputStreamResource> descargarReportePdf(
+        @RequestParam(required = false) String criterio
+    ) {
+
+        List<ComprobanteDePagoResponseDTO> cdp = pagoService.buscarPorCriterio(criterio); 
+
+        ByteArrayInputStream bis = cdpPDFService.generarHistorialPagosPdf(cdp);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=reporte_busqueda_cdp.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
     }
      
 }

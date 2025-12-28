@@ -1,8 +1,12 @@
 package com.cibertec.app.mapper;
 
+import java.time.LocalDate;
+import java.time.Period;
+
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import com.cibertec.app.dto.CitaAgendaMedicoDTO;
 import com.cibertec.app.dto.CitaDetalleDTO;
 import com.cibertec.app.dto.CitaResponseDTO;
 import com.cibertec.app.entity.Cita;
@@ -28,6 +32,14 @@ public interface CitaOutputMapper {
     @Mapping(target = "pacienteDni", source = "paciente.dni")
     @Mapping(target = "idMedico", source = "medico.idMedico")
     CitaDetalleDTO toDetalleDTO(Cita cita);
+    
+	@Mapping(target = "idPaciente", source = "paciente.idPaciente")
+    @Mapping(target = "dniPaciente", source = "paciente.dni")
+    @Mapping(target = "nombreCompletoPaciente", source = "paciente")
+	@Mapping(target = "idHistorial", source = "historialMedico.idHistorial")
+    @Mapping(target = "edadPaciente", source = "paciente.fechaNacimiento")
+    @Mapping(target = "tieneHistorialPrevio", ignore = true) 
+    CitaAgendaMedicoDTO toAgendaMedicoDTO(Cita cita);
 
     default String mapNombreMedico(Medico medico) {
         if (medico == null || medico.getUsuario() == null) return "Sin asignar";
@@ -42,5 +54,11 @@ public interface CitaOutputMapper {
     default String mapNombreUsuario(Usuario usuario) {
         if (usuario == null) return "Sistema";
         return usuario.getNombres() + " " + usuario.getApellidos();
+    }
+
+    // Método para calcular la edad automáticamente
+    default Integer calcularEdad(LocalDate fechaNacimiento) {
+        if (fechaNacimiento == null) return 0;
+        return Period.between(fechaNacimiento, LocalDate.now()).getYears();
     }
 }

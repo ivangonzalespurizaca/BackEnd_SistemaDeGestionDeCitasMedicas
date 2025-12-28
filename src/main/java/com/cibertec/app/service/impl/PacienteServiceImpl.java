@@ -3,6 +3,8 @@ package com.cibertec.app.service.impl;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class PacienteServiceImpl implements PacienteService{
     private final PacienteRepository pacienteRepository;
     private final PacienteMapper pacienteMapper;
     
+    @CacheEvict(value = "pacientes", allEntries = true)
 	@Transactional
 	@Override
 	public PacienteResponseDTO registrarPaciente(PacienteRegistroDTO dto) {
@@ -36,6 +39,7 @@ public class PacienteServiceImpl implements PacienteService{
         return pacienteMapper.toPacienteResponseDTO(guardado);
 	}
 
+    @Cacheable(value = "pacientes", key = "'lista_completa'")
 	@Transactional(readOnly = true)
 	@Override
 	public List<PacienteResponseDTO> listarTodo() {
@@ -45,6 +49,7 @@ public class PacienteServiceImpl implements PacienteService{
                 .toList();
 	}
 
+	@CacheEvict(value = "pacientes", allEntries = true)
 	@Transactional
 	@Override
 	public PacienteResponseDTO actualizarPaciente(PacienteActualizacionDTO dto) {
@@ -62,6 +67,7 @@ public class PacienteServiceImpl implements PacienteService{
         return pacienteMapper.toPacienteResponseDTO(actualizado);
 	}
 
+	@CacheEvict(value = "pacientes", allEntries = true)
 	@Transactional
 	@Override
 	public void eliminarPorId(Long id) {
@@ -71,6 +77,7 @@ public class PacienteServiceImpl implements PacienteService{
         pacienteRepository.deleteById(id);
 	}
 
+	@Cacheable(value = "pacientes", key = "#id")
 	@Transactional(readOnly = true)
 	@Override
 	public PacienteResponseDTO buscarPorId(Long id) {
@@ -79,6 +86,7 @@ public class PacienteServiceImpl implements PacienteService{
         return pacienteMapper.toPacienteResponseDTO(entity);
 	}
 
+	@Cacheable(value = "pacientes", key = "#criterio != null ? #criterio : 'sin_criterio'")
 	@Transactional(readOnly = true)
 	@Override
 	public List<PacienteResponseDTO> buscarPorNombreDNI(String criterio) {

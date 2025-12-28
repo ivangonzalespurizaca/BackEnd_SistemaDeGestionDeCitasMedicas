@@ -3,6 +3,8 @@ package com.cibertec.app.service.impl;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,7 @@ public class MedicoServiceImpl implements MedicoService {
 	private final MedicoMapper medicoMapper;
 
 	@Override
+	@Cacheable(value = "medicos", key = "'lista_completa'")
 	@Transactional(readOnly = true)
 	public List<MedicoResponseDTO> listarTodo() {
 		return medicoRepository.findAll().stream()
@@ -39,6 +42,7 @@ public class MedicoServiceImpl implements MedicoService {
 	}
 
 	@Override
+	@CacheEvict(value = "medicos", allEntries = true)
 	@Transactional
 	public MedicoResponseDTO registrarMedico(MedicoRegistroDTO dto) {
 		Usuario usuarioBase = usuarioRepository.findById(dto.getIdUsuario())
@@ -69,6 +73,7 @@ public class MedicoServiceImpl implements MedicoService {
 		return medicoMapper.toMedicoResponseDTO(guardado);
 	}
 
+	@CacheEvict(value = "medicos", allEntries = true)
 	@Override
 	@Transactional
 	public MedicoResponseDTO actualizarMedico(MedicoActualizarDTO dto) {
@@ -93,6 +98,7 @@ public class MedicoServiceImpl implements MedicoService {
 	}
 
 	@Override
+	@Cacheable(value = "medicos", key = "#id")
 	@Transactional(readOnly = true)
 	public MedicoResponseDTO buscarPorId(Long id) {
 		Medico medico = buscarMedico(id);
@@ -100,6 +106,7 @@ public class MedicoServiceImpl implements MedicoService {
 	}
 
 	@Override
+	@Cacheable(value = "medicos", key = "#criterio != null ? #criterio : 'sin_criterio'")
 	@Transactional(readOnly = true)
 	public List<MedicoResponseDTO> buscarPorCriterio(String criterio) {
 		String criterioLimpio = (criterio != null && !criterio.trim().isEmpty()) ? criterio.trim() : null;
@@ -121,7 +128,9 @@ public class MedicoServiceImpl implements MedicoService {
 				.orElseThrow(() -> new NoSuchElementException("Perfil de Médico no encontrado con ID: " + id));
 	}
 
+	@Cacheable(value = "medicos", key = "'edit_' + #id")
 	@Override
+	@Transactional(readOnly = true)
 	public MedicoVistaModificarDTO obtenerParaEditar(Long id) {
 		Medico medico = medicoRepository.findById(id)
 	            .orElseThrow(() -> new RuntimeException("Médico no encontrado con ID: " + id));
@@ -130,6 +139,7 @@ public class MedicoServiceImpl implements MedicoService {
 	}
 
 	@Override
+	@Cacheable(value = "medicos", key = "'user_' + #username")
     @Transactional(readOnly = true)
     public Long obtenerIdMedicoPorUsername(String username) {
         // El repositorio devuelve Optional<Long>

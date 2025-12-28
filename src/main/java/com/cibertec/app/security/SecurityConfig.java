@@ -38,6 +38,7 @@ public class SecurityConfig {
             .requestMatchers("/api/test/login").permitAll()
             .requestMatchers("/api/test/me").authenticated()
             .requestMatchers("/api/logout").authenticated()
+            .requestMatchers("/api/dashboard/admin").hasRole("ADMINISTRADOR")
             .requestMatchers("/api/administrador/medicos/buscar").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
             .requestMatchers("/api/administrador/horarios/**").hasAnyRole("ADMINISTRADOR", "RECEPCIONISTA")
             .requestMatchers("/api/administrador/**").hasRole("ADMINISTRADOR")

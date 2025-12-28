@@ -3,6 +3,8 @@ package com.cibertec.app.service.impl;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ public class EspecialidadServiceImpl implements EspecialidadService{
 	private final EspecialidadRepository especialidadRepository;
 	private final EspecialidadMapper especialidadMapper;
 
+	@Cacheable(value = "especialidades", key = "'lista_completa'")
 	@Transactional(readOnly = true)
 	@Override
 	public List<EspecialidadResponseDTO> listarTodo() {
@@ -32,6 +35,7 @@ public class EspecialidadServiceImpl implements EspecialidadService{
 				.toList();
 	}
 
+	@Cacheable(value = "especialidades", key = "#nombre != null ? #nombre : 'todas'")
 	@Transactional(readOnly = true)
 	@Override
 	public List<EspecialidadResponseDTO> buscarPorNombre(String nombre) {
@@ -49,6 +53,7 @@ public class EspecialidadServiceImpl implements EspecialidadService{
 	            .toList();
 	}
 
+	@CacheEvict(value = "especialidades", allEntries = true)
 	@Transactional
 	@Override
 	public void eliminarPorId(Long id) {
@@ -60,6 +65,7 @@ public class EspecialidadServiceImpl implements EspecialidadService{
 		
 	}
 
+	@CacheEvict(value = "especialidades", allEntries = true)
 	@Transactional
 	@Override
 	public EspecialidadResponseDTO registrarEspecialidad(EspecialidadRegistroDTO dto) {
@@ -73,6 +79,7 @@ public class EspecialidadServiceImpl implements EspecialidadService{
         return especialidadMapper.toEspecialidadResponseDTO(guardada);
 	}
 
+	@CacheEvict(value = "especialidades", allEntries = true)
 	@Transactional
 	@Override
 	public EspecialidadResponseDTO actualizarEspecialidad(EspecialidadActualizacionDTO dto) {
@@ -90,7 +97,8 @@ public class EspecialidadServiceImpl implements EspecialidadService{
 
         return especialidadMapper.toEspecialidadResponseDTO(actualizada);
 	}
-
+	
+	@Cacheable(value = "especialidades", key = "#id")
 	@Transactional(readOnly = true)
 	@Override
 	public EspecialidadResponseDTO buscarPorId(Long id) {

@@ -93,18 +93,53 @@ public class CitaServiceImpl implements CitaService{
 	@Transactional
 	@Override
 	public CitaResponseDTO actualizarCita(CitaActualizacionDTO dto, String username) {
+	    // 1. Buscar la cita y el usuario que realiza la acción
 	    Cita cita = citaRepository.findById(dto.getIdCita())
 	            .orElseThrow(() -> new EntityNotFoundException("Cita no encontrada."));
 
-	    if (cita.getEstado() != EstadoCita.PENDIENTE && cita.getEstado() != EstadoCita.CONFIRMADO) {
-	        throw new IllegalStateException("No se puede modificar una cita en estado: " + cita.getEstado());
-	    }
-	    
 	    Usuario usuarioActor = usuarioRepository.findByUsername(username)
 	            .orElseThrow(() -> new EntityNotFoundException("Usuario no encontrado: " + username));
 
-	    // CASO A: Se seleccionó un nuevo horario (Reprogramación)
+	    // 2. VALIDACIÓN DE TIEMPO (Periodo de gracia de 20 minutos)
+	    LocalDateTime ahora = LocalDateTime.now();
+	    LocalDateTime horaLimiteCita = cita.getFecha().atTime(cita.getHora()).plusMinutes(20);
+
+	    // Si la cita ya expiró su tiempo de gracia y sigue en estado editable
+	    if (ahora.isAfter(horaLimiteCita) && 
+	       (cita.getEstado() == EstadoCita.PENDIENTE || cita.getEstado() == EstadoCita.CONFIRMADO)) {
+	        
+	        // Cambiamos el estado según la lógica de negocio
+	        EstadoCita nuevoEstado = (cita.getEstado() == EstadoCita.CONFIRMADO) 
+	                                 ? EstadoCita.NO_ATENDIDO 
+	                                 : EstadoCita.VENCIDO;
+	        
+	        cita.setEstado(nuevoEstado);
+
+	        // Liberar el slot vinculado de forma inmediata
+	        SlotHorario slotActual = slotRepository.findByCita(cita).orElse(null);
+	        if (slotActual != null) {
+	            slotActual.setEstadoSlot(EstadoSlotHorario.DISPONIBLE);
+	            slotActual.setCita(null);
+	            slotRepository.save(slotActual);
+	        }
+
+	        // Guardamos y registramos el log del vencimiento
+	        Cita citaExpirada = citaRepository.save(cita);
+	        logService.registrarLog(citaExpirada, Accion.VENCIDO, 
+	            "Sistema: Cita marcada como " + nuevoEstado + " por exceder tolerancia de 20min.", null);
+
+	        // Retornamos el DTO. Al no haber excepción, Spring hará COMMIT de los cambios.
+	        return citaOutputMapper.toResponseDTO(citaExpirada);
+	    }
+
+	    // 3. VALIDACIÓN DE ESTADO PARA EDICIÓN NORMAL
+	    if (cita.getEstado() != EstadoCita.PENDIENTE && cita.getEstado() != EstadoCita.CONFIRMADO) {
+	        throw new IllegalStateException("No se puede modificar una cita en estado: " + cita.getEstado());
+	    }
+
+	    // 4. PROCESAR LA ACTUALIZACIÓN SEGÚN EL CASO
 	    if (dto.getIdSlotNuevo() != null) {
+	        // --- CASO A: REPROGRAMACIÓN ---
 	        SlotHorario slotNuevo = slotRepository.findById(dto.getIdSlotNuevo())
 	                .orElseThrow(() -> new EntityNotFoundException("El nuevo horario no existe."));
 
@@ -113,34 +148,35 @@ public class CitaServiceImpl implements CitaService{
 	        }
 
 	        SlotHorario slotActual = slotRepository.findByCita(cita)
-	                .orElseThrow(() -> new IllegalStateException("No se encontró el slot actual vinculado a la cita."));
+	                .orElseThrow(() -> new IllegalStateException("No se encontró el slot actual vinculado."));
 
 	        if (!slotActual.getIdSlot().equals(slotNuevo.getIdSlot())) {
-	            // 1. Liberar slot viejo (Crucial para el error Duplicate Entry)
+	            // Liberar slot anterior
 	            slotActual.setEstadoSlot(EstadoSlotHorario.DISPONIBLE);
 	            slotActual.setCita(null);
 	            slotRepository.saveAndFlush(slotActual); 
 
-	            // 2. Ocupar slot nuevo
+	            // Reservar nuevo slot
 	            slotNuevo.setEstadoSlot(EstadoSlotHorario.RESERVADO);
 	            slotNuevo.setCita(cita);
 	            slotRepository.saveAndFlush(slotNuevo);
 
-	            // 3. Actualizar la entidad Cita (Mapper) y Logs
+	            // Actualizar entidad Cita y registrar Log
 	            citaInputMapper.updateEntityCita(dto, cita, slotNuevo);
 	            logService.registrarLog(cita, Accion.REASIGNACION, 
-	                "Cita reprogramada del " + slotActual.getFecha() + " al " + slotNuevo.getFecha(), usuarioActor);
+	                "Cita reprogramada: De " + slotActual.getFecha() + " " + slotActual.getHora() + 
+	                " a " + slotNuevo.getFecha() + " " + slotNuevo.getHora(), usuarioActor);
 	        } else {
-	            // El ID del slot es el mismo, pero quizá cambió el motivo
+	            // Mismo slot, solo cambio de motivo
 	            citaInputMapper.updateEntityCita(dto, cita, null);
 	        }
-	    } 
-	    // CASO B: Solo se actualizan datos informativos (Motivo)
-	    else {
+	    } else {
+	        // --- CASO B: SOLO DATOS INFORMATIVOS (MOTIVO) ---
 	        citaInputMapper.updateEntityCita(dto, cita, null);
-	        logService.registrarLog(cita, Accion.REASIGNACION, "Se actualizaron datos informativos (Motivo).", usuarioActor);
+	        logService.registrarLog(cita, Accion.REASIGNACION, "Actualización de motivo de consulta.", usuarioActor);
 	    }
 
+	    // 5. GUARDAR CAMBIOS FINALES
 	    Cita citaGuardada = citaRepository.save(cita);
 	    return citaOutputMapper.toResponseDTO(citaGuardada);
 	}

@@ -1,9 +1,13 @@
 package com.cibertec.app.controller;
 
+import java.io.ByteArrayInputStream;
 import java.security.Principal;
 import java.util.List;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -20,6 +24,7 @@ import com.cibertec.app.dto.CitaDetalleDTO;
 import com.cibertec.app.dto.CitaRegistroDTO;
 import com.cibertec.app.dto.CitaResponseDTO;
 import com.cibertec.app.enums.EstadoCita;
+import com.cibertec.app.service.CitaPdfService;
 import com.cibertec.app.service.CitaService;
 
 import jakarta.validation.Valid;
@@ -30,6 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class CitaController {
 	private final CitaService citaService;
+	private final CitaPdfService citaPdfService;
 	
 	@GetMapping
     public ResponseEntity<List<CitaResponseDTO>> listarTodo() {
@@ -102,4 +108,22 @@ public class CitaController {
         return ResponseEntity.noContent().build();
     }
 	
+    @GetMapping("/reporte/pdf")
+    public ResponseEntity<InputStreamResource> descargarReportePdf(
+        @RequestParam(required = false) String criterio
+    ) {
+
+        List<CitaResponseDTO> citas = citaService.buscarPorCriterio(criterio); 
+
+        ByteArrayInputStream bis = citaPdfService.generarReporteCitas(citas);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Content-Disposition", "inline; filename=reporte_busqueda_citas.pdf");
+
+        return ResponseEntity
+                .ok()
+                .headers(headers)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(bis));
+    }
 }

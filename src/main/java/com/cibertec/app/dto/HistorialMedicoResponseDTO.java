@@ -15,5 +15,5 @@ public class HistorialMedicoResponseDTO {
     private LocalDate fecha;
     private String nombreMedicoResponsable;
     private String especialidadNombre;
-    
+    private String diagnostico;
 }

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 	private final PasswordEncoder passwordEncoder;
 	private final UsuarioMapper usuarioMapper;
 	
+	@CacheEvict(value = "usuarios", allEntries = true)
 	@Transactional
 	@Override
 	public UsuarioResponseDTO registrarUsuario(UsuarioRegistroDTO dto, MultipartFile archivo) {
@@ -66,6 +69,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		
 	}
 	
+	@CacheEvict(value = "usuarios", allEntries = true)
 	@Transactional
 	@Override
 	public UsuarioResponseDTO actualizarUsuario(UsuarioActualizacionDTO dto, MultipartFile archivo) {
@@ -117,6 +121,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		
 	}
 	
+	@Cacheable(value = "usuarios", key = "#userName")
 	@Transactional(readOnly = true)
 	@Override
 	public UsuarioVistaModificarDTO buscarPorUserName(String userName) {
@@ -126,6 +131,7 @@ public class UsuarioServiceImpl implements UsuarioService{
         return usuarioMapper.toVistaModificarDTO(entity);
 	}
 	
+	@Cacheable(value = "usuarios", key = "#id")
 	@Transactional(readOnly = true)
 	@Override
 	public UsuarioResponseDTO buscarPorId(Long id) {
@@ -134,6 +140,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 		return usuarioMapper.toUsuarioResponseDTO(entity);
 	}
 
+	@Cacheable(value = "usuarios", key = "#dni != null ? #dni : 'disponibles_all'")
 	@Transactional(readOnly = true)
 	@Override
 	public List<UsuarioResponseDTO> buscarUsuarioParaMedicosDisponibles(String dni) {
@@ -145,6 +152,7 @@ public class UsuarioServiceImpl implements UsuarioService{
 	            .map(usuarioMapper::toUsuarioResponseDTO).toList();
 	}
 
+	@CacheEvict(value = "usuarios", allEntries = true)
 	@Transactional
 	@Override
 	public void cambiarEstado(Long id) {

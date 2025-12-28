@@ -26,4 +26,7 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Long>{
 		List<Usuario> buscarUsuariosDisponiblesParaMedico(@Param("criterio") String criterio);
 	
 	boolean existsByUsernameAndIdUsuarioNot(String username, Long idUsuario);
+	
+	@Query("SELECT COUNT(u) FROM Usuario u WHERE u.estado = 'ACTIVO'")
+	Long countByEstadoActivo();
 }

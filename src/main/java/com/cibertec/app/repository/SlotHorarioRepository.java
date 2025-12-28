@@ -32,6 +32,11 @@ public interface SlotHorarioRepository extends JpaRepository<SlotHorario, Long>{
 	           "ORDER BY s.hora ASC")
 	List<SlotHorario> obtenerVistaRecepcionCompleta(@Param("idMedico") Long idMedico, @Param("fecha") LocalDate fecha);
 	
+	@Query("SELECT COUNT(s) FROM SlotHorario s WHERE s.fecha = CURRENT_DATE " +
+		       "AND s.hora >= CURRENT_TIME " + // Filtra para que solo cuente lo que aún no pasa
+		       "AND s.estadoSlot = com.cibertec.app.enums.EstadoSlotHorario.DISPONIBLE")
+		Long countSlotsDisponiblesRealesHoy();
+	
 	Optional<SlotHorario> findByCita(Cita cita);
 
 	    @Modifying

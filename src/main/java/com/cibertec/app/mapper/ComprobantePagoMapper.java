@@ -6,6 +6,7 @@ import org.mapstruct.Mapping;
 import com.cibertec.app.dto.ComprobanteDePagoDetalleDTO;
 import com.cibertec.app.dto.ComprobanteDePagoRegistroDTO;
 import com.cibertec.app.dto.ComprobanteDePagoResponseDTO;
+import com.cibertec.app.dto.ComprobanteRecienteDTO;
 import com.cibertec.app.entity.Cita;
 import com.cibertec.app.entity.ComprobanteDePago;
 import com.cibertec.app.entity.Medico;
@@ -45,6 +46,10 @@ public interface ComprobantePagoMapper {
     @Mapping(target = "medicoNombreCompleto", source = "cita.medico")
     @Mapping(target = "cajeroNombreCompleto", source = "usuarioEmisor")
     ComprobanteDePagoDetalleDTO toComprobantePagoDetalleDTO(ComprobanteDePago compro);
+    
+    @Mapping(target = "pacienteNombre", source = "cita.paciente") // Usa el método default mapNombrePaciente
+    @Mapping(target = "estado", source = "estado")
+    ComprobanteRecienteDTO toComprobanteRecienteDTO(ComprobanteDePago compro);
     
     default String mapNombrePaciente(Paciente p) {
         if (p == null) return "Paciente no registrado";
