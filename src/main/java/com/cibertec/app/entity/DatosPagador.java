@@ -22,4 +22,7 @@ public class DatosPagador {
 
     @Column(name = "Contacto_Pagador", length = 15)
     private String contactoPagador;
+    
+    @Column(name = "Email_Pagador", length = 150)
+    private String emailPagador;
 }

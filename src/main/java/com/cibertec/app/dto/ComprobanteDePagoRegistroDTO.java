@@ -5,6 +5,7 @@ import java.math.BigDecimal;
 import com.cibertec.app.enums.MetodoPago;
 
 import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
@@ -39,4 +40,9 @@ public class ComprobanteDePagoRegistroDTO {
     @NotBlank(message = "El contacto del pagador es obligatorio.")
     @Pattern(regexp = "^\\d{9}$", message = "El teléfono debe contener exactamente 9 dígitos numéricos.")
     private String contactoPagador;
+    
+    @NotBlank(message = "El correo electrónico es obligatorio para el envío del comprobante.")
+    @Email(message = "Debe proporcionar un formato de correo electrónico válido.")
+    @Size(max = 150, message = "El correo no puede exceder los 150 caracteres.")
+    private String emailPagador;
 }

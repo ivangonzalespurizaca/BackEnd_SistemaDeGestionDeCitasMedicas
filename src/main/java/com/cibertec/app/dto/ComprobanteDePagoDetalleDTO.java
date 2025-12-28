@@ -28,6 +28,7 @@ public class ComprobanteDePagoDetalleDTO {
     
     private String pacienteNombreCompleto;
     private String medicoNombreCompleto;
+    private String emailPagador;
     
     private String cajeroNombreCompleto;
 }

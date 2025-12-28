@@ -94,6 +94,7 @@ CREATE TABLE Comprobante_Pago (
 	Nombres_Pagador VARCHAR(100) NOT NULL,
 	Apellidos_Pagador VARCHAR(100) NOT NULL,
     DNI_Pagador VARCHAR(8),
+    Email_Pagador VARCHAR(150),
     Contacto_Pagador VARCHAR(15),
     Fecha_Emision DATETIME NOT NULL DEFAULT NOW(),
     Monto DECIMAL(10,2) NOT NULL,

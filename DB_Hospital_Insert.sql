@@ -71,18 +71,19 @@ INSERT INTO Cita (ID_Cita, ID_Medico, ID_Paciente, ID_Usuario, Fecha, Hora, Moti
 (29, 3, 15, 2, '2025-12-28', '17:00:00', 'Control de rutina', 'PENDIENTE');
 
 -- 7. COMPROBANTES DE PAGO (Solo para citas ATENDIDAS o CONFIRMADAS)
-INSERT INTO Comprobante_Pago (ID_Cita, ID_Usuario, Nombres_Pagador, Apellidos_Pagador, DNI_Pagador, Contacto_Pagador, Monto, Metodo_Pago) VALUES
-(1, 3, 'Javier', 'Mendoza', '74851236', '987321654', 80.00, 'EFECTIVO'),
-(2, 3, 'Carlos', 'Torres', '73214589', '945612378', 80.00, 'EFECTIVO'),
-(3, 3, 'Javier', 'Mendoza', '74851236', '987321654', 80.00, 'EFECTIVO'),
-(11, 3, 'Ana', 'Riva Agüero', '76543210', '912345678', 100.00, 'EFECTIVO'),
-(12, 3, 'Miguel', 'Soto Mayor', '70123456', '945678901', 90.00, 'TRANSFERENCIA'),
--- Pagos realizados hoy para citas de hoy (Por eso están CONFIRMADAS)
-(22, 3, 'Jorge', 'Guerra Tello', '72109876', '989012345', 100.00, 'EFECTIVO'),
-(23, 3, 'Isabel', 'Cruzado Ruiz', '71098765', '990123456', 90.00, 'TARJETA'),
-(24, 3, 'Carlos', 'Torres Huamán', '73214589', '945612378', 120.00, 'TRANSFERENCIA'),
-(25, 3, 'Ricardo', 'Palma Ferrand', '70987654', '910234567', 150.00, 'TARJETA'),
-(26, 3, 'Carmen', 'Salcedo Diaz', '79876543', '920345678', 85.00, 'EFECTIVO');
+INSERT INTO Comprobante_Pago (ID_Cita, ID_Usuario, Nombres_Pagador, Apellidos_Pagador, DNI_Pagador, Contacto_Pagador, Email_Pagador,Monto, Metodo_Pago) VALUES
+(1, 3, 'Javier', 'Mendoza Castillo', '74851236', '987321654', 'javier.mendoza@gmail.com', 80.00, 'EFECTIVO'),
+(2, 3, 'Carlos', 'Torres Huamán', '73214589', '945612378', 'c.torres@outlook.com', 80.00, 'EFECTIVO'),
+(3, 3, 'Javier', 'Mendoza Castillo', '74851236', '987321654', 'javier.mendoza@gmail.com', 80.00, 'EFECTIVO'),
+(11, 3, 'Ana', 'Riva Agüero', '76543210', '912345678', 'ana.riva@yahoo.com', 100.00, 'EFECTIVO'),
+(12, 3, 'Miguel', 'Soto Mayor', '70123456', '945678901', 'msotomayor@empresa.com', 90.00, 'TRANSFERENCIA'),
+
+-- Pagos realizados hoy para citas de hoy
+(22, 3, 'Jorge', 'Guerra Tello', '72109876', '989012345', 'jorge.guerra@gmail.com', 100.00, 'EFECTIVO'),
+(23, 3, 'Isabel', 'Cruzado Ruiz', '71098765', '990123456', 'isabel.cruzado@hotmail.com', 90.00, 'TARJETA'),
+(24, 3, 'Carlos', 'Torres Huamán', '73214589', '945612378', 'c.torres@outlook.com', 120.00, 'TRANSFERENCIA'),
+(25, 3, 'Ricardo', 'Palma Ferrand', '70987654', '910234567', 'r.palma@literatura.pe', 150.00, 'TARJETA'),
+(26, 3, 'Oscar Ivan', 'Gonzales Purizaca', '79876543', '920345678', 'gonzalespurizacaoscarivan@gmail.com', 85.00, 'EFECTIVO');
 
 -- 8. HISTORIAL MÉDICO (Solo para citas pasadas con estado ATENDIDO)
 INSERT INTO Historial_Medico (ID_Cita, ID_Usuario, Diagnostico, Tratamiento, Notas_Adicionales, Peso, Presion_Arterial) VALUES

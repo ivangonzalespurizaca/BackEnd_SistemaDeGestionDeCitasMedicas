@@ -24,6 +24,7 @@ public interface ComprobantePagoMapper {
     @Mapping(target = "pagador.apellidosPagador", source = "dto.apellidosPagador")
     @Mapping(target = "pagador.dniPagador", source = "dto.dniPagador")
     @Mapping(target = "pagador.contactoPagador", source = "dto.contactoPagador")
+	@Mapping(target = "pagador.emailPagador", source = "dto.emailPagador")
     ComprobanteDePago toEntityComprobanteDePago(ComprobanteDePagoRegistroDTO dto, Cita cita, Usuario emisor);
 	
 	@Mapping(target = "idCita", source = "cita.idCita")
@@ -31,6 +32,7 @@ public interface ComprobantePagoMapper {
     @Mapping(target = "nombresPagador", source = "pagador.nombresPagador")
     @Mapping(target = "apellidosPagador", source = "pagador.apellidosPagador")
     @Mapping(target = "dniPagador", source = "pagador.dniPagador")
+	@Mapping(target = "emailPagador", source = "pagador.emailPagador")
 	@Mapping(target = "estadoCita", source = "cita.estado")
     ComprobanteDePagoResponseDTO toComprobantePagoResponseDTO(ComprobanteDePago compro);
 	
@@ -38,6 +40,7 @@ public interface ComprobantePagoMapper {
     @Mapping(target = "apellidosPagador", source = "pagador.apellidosPagador")
     @Mapping(target = "dniPagador", source = "pagador.dniPagador")
     @Mapping(target = "contactoPagador", source = "pagador.contactoPagador")
+    @Mapping(target = "emailPagador", source = "pagador.emailPagador")
     @Mapping(target = "idCita", source = "cita.idCita")
     @Mapping(target = "fechaCita", source = "cita.fecha")
     @Mapping(target = "horaCita", source = "cita.hora")

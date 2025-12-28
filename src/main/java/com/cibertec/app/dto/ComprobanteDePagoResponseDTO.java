@@ -22,4 +22,5 @@ public class ComprobanteDePagoResponseDTO {
     private Long idCita; 
     private String pacienteNombreCompleto;
     private String estadoCita;
+    private String emailPagador;
 }
