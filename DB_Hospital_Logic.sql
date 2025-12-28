@@ -84,15 +84,14 @@ BEGIN
       
     -- 3. LOGS Y UPDATE PARA 'NO_ASISTIO'
     INSERT INTO Log_Cita (ID_Cita, Accion, Detalle, Fecha_Accion, ID_Usuario)
-    SELECT ID_Cita, 'NO_ASISTIO', 'Inasistencia automática: Paciente pagó pero no registró atención (Tolerancia 2h)', NOW(), NULL
+    SELECT ID_Cita, 'NO_ASISTIO', 'Inasistencia automática: Paciente pagó pero no registró atención (Tolerancia 20 min)', NOW(), NULL
     FROM Cita
     WHERE Estado = 'CONFIRMADO'
-      AND (Fecha < CURDATE() OR (Fecha = CURDATE() AND Hora < SUBTIME(CURTIME(), '02:00:00')));
-
+      AND (Fecha < CURDATE() OR (Fecha = CURDATE() AND Hora < SUBTIME(CURTIME(), '00:20:00')));
     UPDATE Cita 
     SET Estado = 'NO_ASISTIO' 
     WHERE Estado = 'CONFIRMADO' 
-    AND (Fecha < CURDATE() OR (Fecha = CURDATE() AND Hora < SUBTIME(CURTIME(), '02:00:00')));
+    AND (Fecha < CURDATE() OR (Fecha = CURDATE() AND Hora < SUBTIME(CURTIME(), '00:20:00')));
 
 END $$
 
